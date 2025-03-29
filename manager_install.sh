@@ -56,12 +56,16 @@ while true; do
         2)
             echo "Menginstal Elasticsearch..."
             sudo apt install elasticsearch -y
-            sudo echo "indices.query.bool.max_clause_count: 2000" >> /etc/elasticsearch/elasticsearch.yml
-            sudo echo "http.max_content_length: 400mb" >> /etc/elasticsearch/elasticsearch.yml
-            sudo echo "network.host: $(hostname -I | awk '{print $1}')" >> /etc/elasticsearch/elasticsearch.yml
+	    sleep 1
             sudo systemctl daemon-reload
             sudo systemctl enable elasticsearch.service
             sudo systemctl start elasticsearch.service
+	    sleep 1
+            sudo echo "indices.query.bool.max_clause_count: 2000" >> /etc/elasticsearch/elasticsearch.yml
+            sudo echo "http.max_content_length: 400mb" >> /etc/elasticsearch/elasticsearch.yml
+            sudo echo "network.host: $(hostname -I | awk '{print $1}')" >> /etc/elasticsearch/elasticsearch.yml
+	    sleep 1
+            sudo systemctl restart elasticsearch.service
             echo "Elasticsearch berhasil diinstal."
             echo "Elasticsearch dapat diakses melalui https://$(hostname -I | awk '{print $1}'):9200"
             echo "Silahkan Melakukan Reset Password Elasticsearch terlebih dahulu!"
@@ -72,15 +76,19 @@ while true; do
         3)
             echo "Menginstal Kibana..."
             sudo apt install kibana -y
+	    sleep 1
+	    sudo systemctl daemon-reload
+            sudo systemctl enable kibana.service
+            sudo systemctl start kibana.service
+	    sleep 1
             sudo /usr/share/kibana/bin/kibana-encryption-keys generate >> encrypt.txt
             sudo grep "xpack.encryptedSavedObjects.encryptionKey:" encrypt.txt >> /etc/kibana/kibana.yml
             sudo grep "xpack.reporting.encryptionKey:" encrypt.txt >> /etc/kibana/kibana.yml
             sudo grep "xpack.security.encryptionKey:" encrypt.txt >> /etc/kibana/kibana.yml
             sudo echo "xpack.integration_assistant.enabled: false" >> /etc/kibana/kibana.yml
             sudo echo "server.host: $(hostname -I | awk '{print $1}')" >> /etc/kibana/kibana.yml
-            sudo systemctl daemon-reload
-            sudo systemctl enable kibana.service
-            sudo systemctl start kibana.service
+	    sleep 1
+            sudo systemctl restart kibana.service
             rm encrypt.txt
             echo "Kibana berhasil diinstal."
             echo "Kibana dapat diakses melalui https://$(hostname -I | awk '{print $1}'):5601"
