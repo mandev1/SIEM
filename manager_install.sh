@@ -46,8 +46,8 @@ while true; do
             echo "Melakukan update & upgrade sistem..."
             sudo apt update && sudo apt upgrade -y
             sudo apt install apt-transport-https curl gnupg -y
-            wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
-            echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | tee /etc/apt/sources.list.d/elastic-8.x.list
+            sudo wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+            sudo echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
             sudo apt update
             echo "Update & upgrade selesai."
             sleep 1
@@ -148,6 +148,8 @@ while true; do
             sleep 1
             echo "Fleet Server selesai Restart!"
             sleep 1
+	    read -p "Tekan Enter untuk kembali ke menu."
+            ;;
         0)
             echo "Keluar dari menu. Sampai jumpa!"
             sleep 1
