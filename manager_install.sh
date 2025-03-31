@@ -59,6 +59,8 @@ while true; do
 	    sudo echo "indices.query.bool.max_clause_count: 2000" | sudo tee -a /etc/elasticsearch/elasticsearch.yml
 	    sudo echo "http.max_content_length: 400mb" | sudo tee -a /etc/elasticsearch/elasticsearch.yml
 	    sudo echo "network.host: $(hostname -I | awk '{print $1}')" | sudo tee -a /etc/elasticsearch/elasticsearch.yml
+     	    sudo echo "-Xms4g" | sudo tee -a /etc/elasticsearch/jvm.options
+	    sudo echo "-Xmx4g" | sudo tee -a /etc/elasticsearch/jvm.options
             sudo systemctl daemon-reload
             sudo systemctl enable elasticsearch.service
             sudo systemctl start elasticsearch.service
