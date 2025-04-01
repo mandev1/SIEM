@@ -33,7 +33,8 @@ while true; do
     echo "1. Update & Upgrade Sistem"
     echo "2. Instalasi Zammad"
     echo "3. Instalasi n8n"
-    echo "4. Restart n8n (spesifik)"
+    echo "4. Restart zammad"
+    echo "4. Restart n8n"
     echo "0. Keluar"
     echo "================================================"
     read -p "Pilih opsi [0-5]: " opsi
@@ -43,7 +44,7 @@ while true; do
             # Update & upgrade sistem
             echo "Melakukan update & upgrade sistem..."
             sudo apt update && sudo apt upgrade -y
-            sudo apt install apt-transport-https wget curl gnupg -y
+            sudo apt install apt-transport-https wget curl gnupg docker.io -y 
             echo "Update & upgrade selesai."
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
@@ -51,8 +52,8 @@ while true; do
         2)
             # Instalasi Zammad
             echo "Menginstal Zammad..."
-            wget -qO- https://dl.packager.io/srv/zammad/zammad/key | sudo apt-key add -
-            echo "deb [signed-by=/usr/share/keyrings/zammad-archive-keyring.gpg] https://dl.packager.io/srv/deb/zammad/zammad/stable/ubuntu $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/zammad.list
+            sudo curl -fsSL https://dl.packager.io/srv/zammad/zammad/key | sudo gpg --dearmor | sudo tee /etc/apt/keyrings/pkgr-zammad.gpg> /dev/null
+            sudo echo "deb [signed-by=/etc/apt/keyrings/pkgr-zammad.gpg] https://dl.packager.io/srv/deb/zammad/zammad/stable/ubuntu 22.04 main"| sudo tee /etc/apt/sources.list.d/zammad.list > /dev/null
             sudo apt update && sudo apt install zammad -y
             sudo systemctl enable zammad
             sudo systemctl start zammad
@@ -63,27 +64,8 @@ while true; do
         3)
             # Instalasi n8n
             echo "Menginstal n8n..."
-            curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-            sudo apt install nodejs -y
-            sudo npm install -g n8n
-            sudo bash -c 'cat > /etc/systemd/system/n8n.service <<EOF
-[Unit]
-Description=n8n Automation Tool
-After=network.target
-
-[Service]
-Type=simple
-User=$(whoami)
-ExecStart=$(which n8n)
-Restart=on-failure
-Environment=GENERIC_TIMEZONE="UTC"
-
-[Install]
-WantedBy=multi-user.target
-EOF'
-            sudo systemctl daemon-reload
-            sudo systemctl enable n8n
-            sudo systemctl start n8n
+            docker run -d --name n8n -p 5678:5678 n8nio/n8n
+            sleep 1
             echo "n8n telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}'):5678/"
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
