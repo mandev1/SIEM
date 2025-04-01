@@ -61,10 +61,10 @@ while true; do
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
-        3)
+        4)
             # Instalasi n8n
             echo "Menginstal n8n..."
-            docker run -d --name n8n -p 5678:5678 n8nio/n8n
+            docker run -d --restart=always --name n8n -p 5678:5678 n8nio/n8n
             sleep 1
             echo "n8n telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}'):5678/"
             sleep 1
@@ -81,7 +81,7 @@ while true; do
         5)
             # Restart n8n
             echo "Merestart layanan n8n..."
-            sudo systemctl restart n8n
+            sudo docker restart n8n
             echo "Layanan n8n telah di-restart!"
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
