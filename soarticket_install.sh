@@ -61,7 +61,7 @@ while true; do
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
-        4)
+        3)
             # Instalasi n8n
             echo "Menginstal n8n..."
             docker run -d --restart=always --name n8n -p 5678:5678 n8nio/n8n
