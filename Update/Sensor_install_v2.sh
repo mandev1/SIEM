@@ -104,7 +104,7 @@ while true; do
         5)
             # Instalasi n8n
             echo "Menginstal n8n..."
-            docker run -d --restart=always --name n8n -p 5678:5678 n8nio/n8n
+            docker run -d --restart=always --name n8n -p 5678:5678 n8nio/n8n -e N8N_SECURE_COOKIE=false n8nio/n8n
             sleep 1
             echo "n8n telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}'):5678/"
             sleep 1
