@@ -36,17 +36,17 @@ while true; do
     echo "4. Generate Token & Kode Verifikasi Kibana"
     echo "5. Reset Password Elasticsearch"
     echo "6. Install Fleet Server"
-    echo "7. Install Zammad"
+    echo "7. Install Jira"
     echo "8. Restart Service"
     echo "0. Keluar"
     echo "======================================"
-    read -p "Pilih opsi [0-7]: " opsi
+    read -p "Pilih opsi [0-8]: " opsi
 
     case $opsi in
         1)
             echo "Melakukan update & upgrade sistem..."
             sudo apt update && sudo apt upgrade -y
-            sudo apt install apt-transport-https curl gnupg -y
+            sudo apt install apt-transport-https curl gnupg nginx postgresql postgresql-contrib -y
             sudo wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
             sudo echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
             sudo curl -fsSL https://dl.packager.io/srv/zammad/zammad/key | sudo gpg --dearmor | sudo tee /etc/apt/keyrings/pkgr-zammad.gpg> /dev/null
@@ -136,12 +136,23 @@ while true; do
 	    read -p "Tekan Enter untuk kembali ke menu."
             ;;
         7)
-            echo "Menginstal Zammad..."
-            sudo apt install zammad -y
-	    sudo sed -i 's/server_name localhost;/server_name $(hostname -I | awk '{print $1}');/' /etc/nginx/sites-available/zammad.conf
-            sudo systemctl enable zammad
-            sudo systemctl start zammad
-            echo "Zammad telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}')"
+            echo "Menginstal Jira..."
+	    read -p "Masukkan nama user Database Jira: " PG_USER
+	    read -p "Masukkan password untuk user $PG_USER: " PG_PASSWORD
+	    read -p "Masukkan nama database yang akan dibuat: " PG_DB
+	    sleep 1
+	    # Membuat user dan database di PostgreSQL
+	    sudo -u postgres psql -c "CREATE USER $PG_USER WITH PASSWORD '$PG_PASSWORD';"
+	    sudo -u postgres psql -c "CREATE DATABASE $PG_DB;"
+	    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $PG_DB TO $PG_USER;"
+	    echo "User $PG_USER dan database $PG_DB telah berhasil dibuat."
+     	    sleep 1
+            sudo wget https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-core-10.3.5-x64.bin
+	    sudo chmod 750 atlassian-jira-core-10.3.5-x64.bin
+     	    sudo ./atlassian-jira-core-10.3.5-x64.bin
+            sudo systemctl enable jira.service
+            sudo systemctl start jira.service
+            echo "Jira telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}')"
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
