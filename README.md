@@ -39,9 +39,9 @@ Server ini bertugas untuk otomasi **alert & ticketing** dari Server Manager.
 
 ✔️ Pengiriman **log** dari beberapa sumber (*website & Threat Intelligence*) ke Elasticsearch.
 
-## 🛠️ Challenges (Yang masih perlu dikerjakan)
+✔️ Testing script instalasi server.
 
-🔲 Testing script instalasi 3 jenis server.
+## 🛠️ Challenges (Yang masih perlu dikerjakan)
 
 🔲 Integrasi **ticketing ke media sosial**.
 
