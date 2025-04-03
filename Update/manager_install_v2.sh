@@ -137,6 +137,15 @@ while true; do
             ;;
         7)
             echo "Menginstal Jira..."
+            sudo wget https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-core-10.3.5-x64.bin
+	    sudo chmod 750 atlassian-jira-core-10.3.5-x64.bin
+     	    sudo ./atlassian-jira-core-10.3.5-x64.bin
+            sudo systemctl enable jira.service
+            sudo systemctl start jira.service
+            echo "Jira telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}')"
+            sleep 1
+	    echo "Konfigurasi Database untuk Jira..."
+     	    echo "Harap dibuat sebelum konfigurasi Jira..."
 	    read -p "Masukkan nama user Database Jira: " PG_USER
 	    read -p "Masukkan password untuk user $PG_USER: " PG_PASSWORD
 	    read -p "Masukkan nama database yang akan dibuat: " PG_DB
@@ -147,13 +156,6 @@ while true; do
 	    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $PG_DB TO $PG_USER;"
 	    echo "User $PG_USER dan database $PG_DB telah berhasil dibuat."
      	    sleep 1
-            sudo wget https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-core-10.3.5-x64.bin
-	    sudo chmod 750 atlassian-jira-core-10.3.5-x64.bin
-     	    sudo ./atlassian-jira-core-10.3.5-x64.bin
-            sudo systemctl enable jira.service
-            sudo systemctl start jira.service
-            echo "Jira telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}')"
-            sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
         8)
