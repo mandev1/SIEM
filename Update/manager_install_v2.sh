@@ -138,6 +138,7 @@ while true; do
         7)
             echo "Menginstal Zammad..."
             sudo apt install zammad -y
+	    sudo sed -i 's/server_name localhost;/server_name $(hostname -I | awk '{print $1}');/' /etc/nginx/sites-available/zammad.conf
             sudo systemctl enable zammad
             sudo systemctl start zammad
             echo "Zammad telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}')"
