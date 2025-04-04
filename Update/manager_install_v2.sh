@@ -141,6 +141,7 @@ while true; do
      	    sudo ./atlassian-jira-core-10.3.5-x64.bin
             echo "Jira telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}')"
             sleep 1
+	    read -p "Tekan Enter untuk kembali ke menu."
             ;;
 	8)
  	    echo "Konfigurasi Database untuk Jira..."
