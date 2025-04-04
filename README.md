@@ -5,24 +5,24 @@
 Proyek **SIEM** ini bertujuan untuk membangun sistem **Security Information and Event Management** (SIEM) berbasis **Elasticsearch, Kibana, Elastic-Agent**, dan **Zammad** untuk mendeteksi serta merespons ancaman keamanan secara otomatis.
 
 ## 🏗️ Desain Arsitektur
-Proyek ini menggunakan **3 jenis server** dengan fungsi sebagai berikut:
+Proyek ini menggunakan **3 jenis Aplikasi** dengan fungsi sebagai berikut:
 
-### 🔹 1. Server Manager
-Server utama untuk mengelola dan mengolah data yang dikumpulkan dari server sensor.
+### 🔹 1. Sistem Manager
+Sistem utama untuk mengelola dan mengolah data yang dikumpulkan dari server sensor.
 
 🔹 **Aplikasi yang digunakan:**
 - Elasticsearch
 - Kibana
 - FleetServer
 
-### 🔹 2. Server Sensor
-Server yang bertugas mengumpulkan log dari berbagai perangkat seperti **Firewall, WAF, Website, dll.**
+### 🔹 2. Sensor
+Sistem yang bertugas mengumpulkan log dari berbagai perangkat seperti **Firewall, WAF, Website, dll.**
 
 🔹 **Aplikasi yang digunakan:**
 - Elastic-Agent
 
-### 🔹 3. Server SOAR & Ticket
-Server ini bertugas untuk otomasi **alert & ticketing** dari Server Manager.
+### 🔹 3. SOAR & Ticket
+Sistem ini bertugas untuk otomasi **alert & ticketing** dari Server Manager.
 
 🔹 **Aplikasi yang digunakan:**
 - n8n
