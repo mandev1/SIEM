@@ -56,7 +56,7 @@ while true; do
             read -p "Masukkan Fleet Enrollment Token: " ENROLLMENT_TOKEN
             echo "Install Elastic Agent Pada Server ini (via Docker)..."
             read -p "Masukkan Nama Agent: " AGENT
-            read -p "Masukkan Host Elasticsearch: " IP_ADDRESS
+            read -p "Masukkan IP Host Elasticsearch : " IP_ADDRESS
             sudo docker run -d --restart=always --name $AGENT \
                 --env FLEET_ENROLL=1 \
                 --env FLEET_URL=https://$IP_ADDRESS:8220 \
