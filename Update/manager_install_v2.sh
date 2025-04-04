@@ -37,7 +37,8 @@ while true; do
     echo "5. Reset Password Elasticsearch"
     echo "6. Install Fleet Server"
     echo "7. Install Jira"
-    echo "8. Restart Service"
+    echo "8. Konfigurasi Jira"
+    echo "9. Restart Service"
     echo "0. Keluar"
     echo "======================================"
     read -p "Pilih opsi [0-8]: " opsi
