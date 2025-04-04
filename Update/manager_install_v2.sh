@@ -46,11 +46,9 @@ while true; do
         1)
             echo "Melakukan update & upgrade sistem..."
             sudo apt update && sudo apt upgrade -y
-            sudo apt install apt-transport-https curl gnupg nginx postgresql postgresql-contrib -y
+            sudo apt install apt-transport-https curl gnupg nginx postgresql postgresql-contrib openjdk-17-jre -y
             sudo wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
             sudo echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
-            sudo curl -fsSL https://dl.packager.io/srv/zammad/zammad/key | sudo gpg --dearmor | sudo tee /etc/apt/keyrings/pkgr-zammad.gpg> /dev/null
-            sudo echo "deb [signed-by=/etc/apt/keyrings/pkgr-zammad.gpg] https://dl.packager.io/srv/deb/zammad/zammad/stable/ubuntu 22.04 main"| sudo tee /etc/apt/sources.list.d/zammad.list > /dev/null
             sudo apt update
             echo "Update & upgrade selesai."
             sleep 1
@@ -137,16 +135,17 @@ while true; do
             ;;
         7)
             echo "Menginstal Jira..."
-            sudo wget https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-core-10.3.5-x64.bin
+            curl -L -O https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-core-10.3.5-x64.bin
 	    sudo chmod 750 atlassian-jira-core-10.3.5-x64.bin
      	    sudo ./atlassian-jira-core-10.3.5-x64.bin
             sudo systemctl enable jira.service
             sudo systemctl start jira.service
             echo "Jira telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}')"
             sleep 1
-	    echo "Konfigurasi Database untuk Jira..."
-     	    echo "Harap dibuat sebelum konfigurasi Jira..."
-	    read -p "Masukkan nama user Database Jira: " PG_USER
+            ;;
+	8)
+ 	    echo "Konfigurasi Database untuk Jira..."
+     	    read -p "Masukkan nama user Database Jira: " PG_USER
 	    read -p "Masukkan password untuk user $PG_USER: " PG_PASSWORD
 	    read -p "Masukkan nama database yang akan dibuat: " PG_DB
 	    sleep 1
@@ -157,8 +156,7 @@ while true; do
 	    echo "User $PG_USER dan database $PG_DB telah berhasil dibuat."
      	    sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
-            ;;
-        8)
+        9)
             echo "Restart Semua Service..."
             sleep 1
             echo "Restart Elasticsearch..."
@@ -176,7 +174,7 @@ while true; do
             sleep 1
             echo "Fleet Server selesai Restart!"
             sleep 1
-            sudo systemctl restart zammad
+            sudo systemctl restart jira
             sleep 1
             echo "Fleet Server selesai Restart!"
             sleep 1
