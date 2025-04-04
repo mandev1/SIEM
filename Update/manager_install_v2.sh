@@ -47,7 +47,7 @@ while true; do
         1)
             echo "Melakukan update & upgrade sistem..."
             sudo apt update && sudo apt upgrade -y
-            sudo apt install apt-transport-https curl gnupg nginx postgresql postgresql-contrib openjdk-17-jre -y
+            sudo apt install apt-transport-https curl gnupg postgresql postgresql-contrib -y
             sudo wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
             sudo echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
             sudo apt update
@@ -139,8 +139,6 @@ while true; do
             curl -L -O https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-core-10.3.5-x64.bin
 	    sudo chmod 750 atlassian-jira-core-10.3.5-x64.bin
      	    sudo ./atlassian-jira-core-10.3.5-x64.bin
-            sudo systemctl enable jira.service
-            sudo systemctl start jira.service
             echo "Jira telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}')"
             sleep 1
             ;;
