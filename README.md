@@ -2,7 +2,7 @@
 
 
 ## 📌 Tentang Proyek
-Proyek **SIEM** ini bertujuan untuk membangun sistem **Security Information and Event Management** (SIEM) berbasis **Elasticsearch, Kibana, Elastic-Agent**, dan **Zammad** untuk mendeteksi serta merespons ancaman keamanan secara otomatis.
+Proyek **SIEM** ini bertujuan untuk membangun sistem **Security Information and Event Management** (SIEM) berbasis **Elasticsearch, Kibana, Elastic-Agent**, dan **Jira** untuk mendeteksi serta merespons ancaman keamanan secara otomatis.
 
 ## 🏗️ Desain Arsitektur
 Proyek ini menggunakan **3 jenis Aplikasi** dengan fungsi sebagai berikut:
