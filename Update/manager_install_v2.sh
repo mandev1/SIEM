@@ -157,6 +157,7 @@ while true; do
 	    echo "User $PG_USER dan database $PG_DB telah berhasil dibuat."
      	    sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
+	    ;;
         9)
             echo "Restart Semua Service..."
             sleep 1
