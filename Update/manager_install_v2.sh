@@ -139,7 +139,7 @@ while true; do
             curl -L -O https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-core-10.3.5-x64.bin
 	    sudo chmod 750 atlassian-jira-core-10.3.5-x64.bin
      	    sudo ./atlassian-jira-core-10.3.5-x64.bin
-	    sleep 1
+	    sleep 20
 	    sudo kill $(pgrep -f "jira")
      	    sleep 1
 	    sudo systemctl enable jira.service
