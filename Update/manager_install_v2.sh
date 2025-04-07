@@ -139,11 +139,8 @@ while true; do
             curl -L -O https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-core-10.3.5-x64.bin
 	    sudo chmod 750 atlassian-jira-core-10.3.5-x64.bin
      	    sudo ./atlassian-jira-core-10.3.5-x64.bin
-	    sleep 20
-	    sudo kill $(pgrep -f "jira")
      	    sleep 1
 	    sudo systemctl enable jira.service
-     	    sudo systemctl start jira.service
 	    sleep 1
             echo "Jira telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}')"
             sleep 1
