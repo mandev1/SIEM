@@ -55,6 +55,8 @@ Sistem ini bertugas untuk otomasi **alert & ticketing** dari Server Manager.
 
 🔲 List perangkat yang akan dimonitor.
 
+🔲 Konfigurasi sistem **SOAR** di **n8n**.
+
 ## 🎯 Cara Kontribusi
 Jika tertarik untuk berkontribusi, silakan fork repository ini dan buat **Pull Request**! 💡
 
