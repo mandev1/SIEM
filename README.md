@@ -1,5 +1,6 @@
 # 🚀 SIEM - Security Information and Event Management
 
+![siem drawio](https://github.com/user-attachments/assets/4bcc6077-1377-405e-9b4d-d7cf4ebefc49)
 
 ## 📌 Tentang Proyek
 Proyek **SIEM** ini bertujuan untuk membangun sistem **Security Information and Event Management** (SIEM) berbasis **Elasticsearch, Kibana, Elastic-Agent**, dan **Jira** untuk mendeteksi serta merespons ancaman keamanan secara otomatis.
