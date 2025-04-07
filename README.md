@@ -29,7 +29,7 @@ Sistem ini bertugas untuk otomasi **alert & ticketing** dari Server Manager.
 - Jira
 
 ## 📌 Sketsa Arsitektur
-![Untitled-2025-03-13-0920](https://github.com/user-attachments/assets/4070bf9f-8c33-4c98-a134-9dace569e1e2)
+![Untitled-2025-03-13-0920](https://github.com/user-attachments/assets/ff9cf809-7ad3-4ea6-a0de-6432b661b76d)
 
 ## ✅ Checkpoint (Progress yang sudah dikerjakan)
 
