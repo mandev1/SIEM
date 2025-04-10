@@ -9,7 +9,7 @@ verify_root_login() {
     echo
 
     # Verifikasi apakah password root valid
-    echo "$root_password" | sudo -S echo "" > /dev/null 2>&1
+    echo "$root_password" | sudo -kS echo "" > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         echo "Password salah. Silakan coba lagi."
         sleep 2
