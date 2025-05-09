@@ -31,14 +31,11 @@ while true; do
     echo "         Elasticsearch & Kibana       "
     echo "======================================"
     echo "1. Update & Upgrade Sistem"
-    echo "2. Install Elasticsearch"
-    echo "3. Install Kibana"
-    echo "4. Generate Token & Kode Verifikasi Kibana"
-    echo "5. Reset Password Elasticsearch"
-    echo "6. Install Fleet Server"
-    echo "7. Install Jira"
-    echo "8. Konfigurasi Jira"
-    echo "9. Restart Service"
+    echo "2. Create Certificate"
+    echo "3. Install Wazuh Indexer"
+    echo "4. Install Wazuh Manager"
+    echo "5. Install Wazuh Dashboard"
+    echo "6. Restart Service"
     echo "0. Keluar"
     echo "======================================"
     read -p "Pilih opsi [0-8]: " opsi
@@ -47,7 +44,7 @@ while true; do
         1)
             echo "Melakukan update & upgrade sistem..."
             sudo apt update && sudo apt upgrade -y
-            sudo apt install apt-transport-https curl gnupg debconf adduser procps -y
+            sudo apt install apt-transport-https curl gnupg debconf adduser procps libcap -y
             sudo curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | sudo gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && sudo chmod 644 /usr/share/keyrings/wazuh.gpg
             sudo echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" | sudo tee -a /etc/apt/sources.list.d/wazuh.list
             sudo apt update
@@ -56,131 +53,113 @@ while true; do
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
         2)
-            echo "Menginstal Elasticsearch..."
-            sudo apt install elasticsearch -y
-	    sudo echo "indices.query.bool.max_clause_count: 2000" | sudo tee -a /etc/elasticsearch/elasticsearch.yml
-	    sudo echo "http.max_content_length: 400mb" | sudo tee -a /etc/elasticsearch/elasticsearch.yml
-	    sudo echo "network.host: $(hostname -I | awk '{print $1}')" | sudo tee -a /etc/elasticsearch/elasticsearch.yml
-     	    sudo echo "-Xms4g" | sudo tee -a /etc/elasticsearch/jvm.options
-	    sudo echo "-Xmx4g" | sudo tee -a /etc/elasticsearch/jvm.options
-            sudo systemctl daemon-reload
-            sudo systemctl enable elasticsearch.service
-            sudo systemctl start elasticsearch.service
-            echo "Elasticsearch berhasil diinstal."
-            echo "Elasticsearch dapat diakses melalui https://$(hostname -I | awk '{print $1}'):9200"
-            echo "Silahkan Melakukan Reset Password Elasticsearch terlebih dahulu!"
-            echo "Pada opsi [5. Reset Password Elasticsearch]"
+            echo "Generate Certificate..."
+            sed -i 's/<indexer-node-ip>/$(hostname -I | awk '{print $1}')/g' config.yml
+	    sed -i 's/<wazuh-manager-ip>/$(hostname -I | awk '{print $1}')/g' config.yml
+    	    sed -i 's/<dashboard-node-ip>/$(hostname -I | awk '{print $1}')/g' config.yml
+	    sudo ./wazuh-certs-tool.sh -A
+     	    sleep 1
+	    ls ./wazuh-certificates
+     	    echo "Certificate sudah selesai dibuat!!!"
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
         3)
-            echo "Menginstal Kibana..."
-            sudo apt install kibana -y
-            sudo /usr/share/kibana/bin/kibana-encryption-keys generate >> encrypt.txt
-	    sudo grep "xpack.encryptedSavedObjects.encryptionKey:" encrypt.txt | sudo tee -a /etc/kibana/kibana.yml
-	    sudo grep "xpack.reporting.encryptionKey:" encrypt.txt | sudo tee -a /etc/kibana/kibana.yml
-	    sudo grep "xpack.security.encryptionKey:" encrypt.txt | sudo tee -a /etc/kibana/kibana.yml
-	    sudo echo "xpack.integration_assistant.enabled: false" | sudo tee -a /etc/kibana/kibana.yml
-	    sudo echo "server.host: $(hostname -I | awk '{print $1}')" | sudo tee -a /etc/kibana/kibana.yml
+            echo "Menginstal Wazuh Indexer..."
+            sudo apt install wazuh-indexer -y
+            sudo sed -i 's/127.0.0.1/$(hostname -I | awk '{print $1}')/g' /etc/wazuh-indexer/opensearch.yml
+	    mkdir /etc/wazuh-indexer/certs
+	    sudo cp admin.pem admin-key.pem root-ca.pem  /etc/wazuh-indexer/certs
+     	    sudo cp node-1.pem /etc/wazuh-indexer/certs/indexer.pem
+	    sudo cp node-1-key.pem /etc/wazuh-indexer/certs/indexer-key.pem
+	    sudo chmod 500 /etc/wazuh-indexer/certs
+	    sudo chmod 400 /etc/wazuh-indexer/certs/*
+	    sudo chown -R wazuh-indexer:wazuh-indexer /etc/wazuh-indexer/certs
             sudo systemctl daemon-reload
-            sudo systemctl enable kibana.service
-            sudo systemctl start kibana.service
-            rm encrypt.txt
-            echo "Kibana berhasil diinstal."
-            echo "Kibana dapat diakses melalui https://$(hostname -I | awk '{print $1}'):5601"
-            echo "Selanjutnya Masukkan Token & Kode Verifikasi Kibana terlebih dahulu!"
-            echo "Pada opsi [4. Generate Token & Kode Verifikasi Kibana]"
+     	    sudo systemctl enable wazuh-indexer
+	    sudo systemctl start wazuh-indexer
+            sudo /usr/share/wazuh-indexer/bin/indexer-security-init.sh
+	    sleep 1
+            echo "Instalasi Wazuh Indexer selesai!!!"
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
+     
         4)  
-            echo "Silahkan Masukkan Token Kibana ini Pada Web: "
-            echo ""
-	    sudo /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana 
-	    echo ""
-	    echo "======================================"
-	    echo ""
-	    sleep 2
-	    echo "Silahkan Masukkan Kode Verifikasi Kibana ini Pada Web: "
-	    echo ""
-	    sudo /usr/share/kibana/bin/kibana-verification-code
-	    echo ""
+            echo "Menginstal Wazuh Manager..."
+            sudo apt install wazuh-manager filebeat -y
+            sudo sed -i 's/127.0.0.1/$(hostname -I | awk '{print $1}')/g' /etc/filebeat/filebeat.yml
+	    sudo filebeat keystore create
+     	    sudo echo admin | filebeat keystore add username --stdin --force
+            sudo echo admin | filebeat keystore add password --stdin --force
+	    sudo curl -so /etc/filebeat/wazuh-template.json https://raw.githubusercontent.com/wazuh/wazuh/v4.12.0/extensions/elasticsearch/7.x/wazuh-template.json
+	    sudo chmod go+r /etc/filebeat/wazuh-template.json
+	    sudo curl -s https://packages.wazuh.com/4.x/filebeat/wazuh-filebeat-0.4.tar.gz | sudo tar -xvz -C /usr/share/filebeat/module
+	    mkdir /etc/wazuh-indexer/certs
+	    sudo cp root-ca.pem  /etc/wazuh-indexer/certs
+     	    sudo cp wazuh-1.pem /etc/filebeat/certs/filebeat.pem
+	    sudo cp wazuh-1-key.pem /etc/filebeat/certs/filebeat-key.pem
+	    sudo chmod 500 /etc/filebeat/certs
+	    sudo chmod 400 400 /etc/filebeat/certs/*
+	    sudo chown -R root:root /etc/filebeat/certs
+     	    sudo echo admin | /var/ossec/bin/wazuh-keystore -f indexer -k username
+	    sudo echo admin | /var/ossec/bin/wazuh-keystore -f indexer -k password
+     	    sudo sed -i 's/127.0.0.1:9200/$(hostname -I | awk '{print $1}'):9200/g' /var/ossec/etc/ossec.conf
+     	    sudo systemctl enable wazuh-indexer
+	    sudo systemctl start wazuh-indexer
+            sudo systemctl enable filebeat
+	    sudo systemctl start filebeat
 	    sleep 1
-	    read -p "Tekan Enter untuk kembali ke menu."
+	    filebeat test output
+	    sleep 1
+            echo "Instalasi Wazuh Manager selesai!!!"
+            sleep 1
+            read -p "Tekan Enter untuk kembali ke menu."
             ;;
         5)
-            echo "Reset password Elasticsearch..."
-            sudo /usr/share/elasticsearch/bin/elasticsearch-reset-password -u elastic -i
+ 	    echo "Menginstal Wazuh Dashboard..."
+            sudo apt install wazuh-dashboard -y
+            sudo sed -i 's/localhost:9200/$(hostname -I | awk '{print $1}')9200/g' /etc/wazuh-dashboard/opensearch_dashboards.yml
+	    
+	    mkdir /etc/wazuh-dashboard/certs
+	    sudo cp root-ca.pem dashboard-key.pem dashboard.pem   /etc/wazuh-dashboard/certs
+	    sudo chmod 500 /etc/wazuh-dashboard/certs
+	    sudo chmod 400 /etc/wazuh-dashboard/certs/*
+	    sudo chown -R wazuh-dashboard:wazuh-dashboard /etc/wazuh-dashboard/certs
+     	    sudo systemctl enable wazuh-dashboard
+	    sudo systemctl start wazuh-dashboard
+            sudo /usr/share/wazuh-indexer/bin/indexer-security-init.sh
+	    sleep 1
+            echo "Instalasi Wazuh Dashboard selesai!!!"
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
+     
         6)
-            # Instalasi Fleet Server
-            echo "Download Installer Fleet Server..."
-            curl -L -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.17.3-linux-x86_64.tar.gz
-            tar xzvf elastic-agent-8.17.3-linux-x86_64.tar.gz
-            read -p "Masukkan Fleet Server Service Token: " SERVICE_TOKEN
-            sleep 1
-            read -p "Masukkan Fleet Server CA Certificate: " CA_CERTIFICATE
-            sleep 1
-            echo "Menginstal Fleet Server..."
-            sudo elastic-agent-8.17.3-linux-x86_64/elastic-agent install \
-                --fleet-server-es="https://$(hostname -I | awk '{print $1}'):9200" \
-                --fleet-server-service-token=$SERVICE_TOKEN \
-                --fleet-server-policy=fleet-server-policy \
-                --fleet-server-es-ca-trusted-fingerprint=$CA_CERTIFICATE \
-                --fleet-server-port=8220 -f
-            echo "Fleet Server berhasil diinstal!"
-	    sleep 1
-	    read -p "Tekan Enter untuk kembali ke menu."
-            ;;
-        7)
-            echo "Menginstal Jira..."
-            curl -L -O https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-core-10.3.5-x64.bin
-	    sudo chmod 750 atlassian-jira-core-10.3.5-x64.bin
-     	    sudo ./atlassian-jira-core-10.3.5-x64.bin
-     	    sleep 1
-	    sudo systemctl enable jira.service
-	    sleep 1
-            echo "Jira telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}')"
-            sleep 1
-	    read -p "Tekan Enter untuk kembali ke menu."
-            ;;
-	8)
- 	    echo "Konfigurasi Database untuk Jira..."
-     	    read -p "Masukkan nama user Database Jira: " PG_USER
-	    read -p "Masukkan password untuk user $PG_USER: " PG_PASSWORD
-	    read -p "Masukkan nama database yang akan dibuat: " PG_DB
-	    sleep 1
-	    # Membuat user dan database di PostgreSQL
-	    sudo -u postgres psql -c "CREATE USER $PG_USER WITH PASSWORD '$PG_PASSWORD';"
-	    sudo -u postgres psql -c "CREATE DATABASE $PG_DB;"
-	    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $PG_DB TO $PG_USER;"
-	    echo "User $PG_USER dan database $PG_DB telah berhasil dibuat."
-     	    sleep 1
-            read -p "Tekan Enter untuk kembali ke menu."
-	    ;;
-        9)
             echo "Restart Semua Service..."
             sleep 1
-            echo "Restart Elasticsearch..."
-            sudo systemctl restart elasticsearch
+	    
+            echo "Restart Wazuh Indexer..."
+            sudo systemctl restart wazuh-indexer
             sleep 1
-            echo "Elasticsearch selesai Restart!"
+            echo "Wazuh Indexer selesai Restart!"
             sleep 1
-            echo "Restart Kibana"
-            sudo systemctl restart kibana
+	    
+            echo "Restart Wazuh Manager"
+            sudo systemctl restart wazuh-manager
             sleep 1
-            echo "Kibana selesai Restart!"
+            echo "Wazuh Manager selesai Restart!"
             sleep 1
-            echo "Restart Fleet Server"
-            sudo systemctl restart elastic-agent
+	    
+            echo "Restart Wazuh Dashboard"
+            sudo systemctl restart wazuh-dashboard
             sleep 1
-            echo "Fleet Server selesai Restart!"
+            echo "Wazuh Dashboard selesai Restart!"
             sleep 1
-            sudo systemctl restart jira
+	    echo "Restart Filebeat"
+            sudo systemctl restart filebeat
             sleep 1
-            echo "Fleet Server selesai Restart!"
+            echo "Filebeat selesai Restart!"
             sleep 1
 	    read -p "Tekan Enter untuk kembali ke menu."
             ;;
