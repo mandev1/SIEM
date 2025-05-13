@@ -32,7 +32,7 @@ while true; do
     echo "======================================"
     echo "1. Update & Upgrade Sistem"
     echo "2. Install Elasticsearch"
-    echo "3. Install Kibana"
+    echo "3. Install Kibana & Logstash"
     echo "4. Generate Token & Kode Verifikasi Kibana"
     echo "5. Reset Password Elasticsearch"
     echo "6. Install Fleet Server"
@@ -74,8 +74,8 @@ while true; do
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
         3)
-            echo "Menginstal Kibana..."
-            sudo apt install kibana -y
+            echo "Menginstal Kibana & Logstash..."
+            sudo apt install kibana logstash -y
             sudo /usr/share/kibana/bin/kibana-encryption-keys generate >> encrypt.txt
 	    sudo grep "xpack.encryptedSavedObjects.encryptionKey:" encrypt.txt | sudo tee -a /etc/kibana/kibana.yml
 	    sudo grep "xpack.reporting.encryptionKey:" encrypt.txt | sudo tee -a /etc/kibana/kibana.yml
