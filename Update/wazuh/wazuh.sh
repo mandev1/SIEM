@@ -59,7 +59,7 @@ while true; do
     	    sed -i 's/<dashboard-node-ip>/$(hostname -I | awk '{print $1}')/g' config.yml
 	    sudo ./wazuh-certs-tool.sh -A
      	    sleep 1
-	    ls ./wazuh-certificates
+	    ls -lah  ./wazuh-certificates
      	    echo "Certificate sudah selesai dibuat!!!"
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
@@ -68,6 +68,8 @@ while true; do
             echo "Menginstal Wazuh Indexer..."
             sudo apt install wazuh-indexer -y
             sudo sed -i 's/127.0.0.1/$(hostname -I | awk '{print $1}')/g' /etc/wazuh-indexer/opensearch.yml
+	    sudo sed -i 's/Xms1g/Xms4g/g' /etc/wazuh-indexer/jvm.options
+	    sudo sed -i 's/Xmx1g/Xmx4g/g' /etc/wazuh-indexer/jvm.options
 	    mkdir /etc/wazuh-indexer/certs
 	    sudo cp admin.pem admin-key.pem root-ca.pem  /etc/wazuh-indexer/certs
      	    sudo cp node-1.pem /etc/wazuh-indexer/certs/indexer.pem
@@ -120,7 +122,6 @@ while true; do
  	    echo "Menginstal Wazuh Dashboard..."
             sudo apt install wazuh-dashboard -y
             sudo sed -i 's/localhost:9200/$(hostname -I | awk '{print $1}')9200/g' /etc/wazuh-dashboard/opensearch_dashboards.yml
-	    
 	    mkdir /etc/wazuh-dashboard/certs
 	    sudo cp root-ca.pem dashboard-key.pem dashboard.pem   /etc/wazuh-dashboard/certs
 	    sudo chmod 500 /etc/wazuh-dashboard/certs
