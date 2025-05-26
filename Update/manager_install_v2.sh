@@ -87,7 +87,7 @@ while true; do
             sudo systemctl start kibana.service
             rm encrypt.txt
             echo "Kibana berhasil diinstal."
-            echo "Kibana dapat diakses melalui https://$(hostname -I | awk '{print $1}'):5601"
+            echo "Kibana dapat diakses melalui http://$(hostname -I | awk '{print $1}'):5601"
             echo "Selanjutnya Masukkan Token & Kode Verifikasi Kibana terlebih dahulu!"
             echo "Pada opsi [4. Generate Token & Kode Verifikasi Kibana]"
             sleep 1
