@@ -46,11 +46,10 @@ while true; do
             echo "Melakukan update & upgrade sistem..."
             sudo apt update && sudo apt upgrade -y
             sudo apt install apt-transport-https curl ca-certificates curl gnupg lsb-release -y
-            sudo mkdir -p /etc/apt/keyrings
-            sudo curl -fsSL https://download.docker.com/linux/$(. /etc/os-release && echo "$ID")/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-            sudo echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$(. /etc/os-release && echo "$ID") $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-            sudo apt update
-            sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+            curl -fsSL https://get.docker.com -o get-docker.sh
+            sudo sh get-docker.sh
+            sudo systemctl enable docker.service && sudo systemctl enable containerd.service
+			sudo systemctl start docker.service && sudo systemctl start containerd.service
             echo "Update & upgrade selesai."
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
