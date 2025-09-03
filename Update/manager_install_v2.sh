@@ -58,11 +58,11 @@ while true; do
         2)
             echo "Menginstal Elasticsearch..."
             sudo apt install elasticsearch -y
-	    sudo echo "indices.query.bool.max_clause_count: 2000" | sudo tee -a /etc/elasticsearch/elasticsearch.yml
-	    sudo echo "http.max_content_length: 400mb" | sudo tee -a /etc/elasticsearch/elasticsearch.yml
-	    sudo echo "network.host: $(hostname -I | awk '{print $1}')" | sudo tee -a /etc/elasticsearch/elasticsearch.yml
+	    	sudo echo "indices.query.bool.max_clause_count: 2000" | sudo tee -a /etc/elasticsearch/elasticsearch.yml
+	    	sudo echo "http.max_content_length: 400mb" | sudo tee -a /etc/elasticsearch/elasticsearch.yml
+	    	sudo echo "network.host: $(hostname -I | awk '{print $1}')" | sudo tee -a /etc/elasticsearch/elasticsearch.yml
      	    sudo echo "-Xms4g" | sudo tee -a /etc/elasticsearch/jvm.options
-	    sudo echo "-Xmx4g" | sudo tee -a /etc/elasticsearch/jvm.options
+	    	sudo echo "-Xmx4g" | sudo tee -a /etc/elasticsearch/jvm.options
             sudo systemctl daemon-reload
             sudo systemctl enable elasticsearch.service
             sudo systemctl start elasticsearch.service
@@ -77,14 +77,16 @@ while true; do
             echo "Menginstal Kibana & Logstash..."
             sudo apt install kibana logstash -y
             sudo /usr/share/kibana/bin/kibana-encryption-keys generate >> encrypt.txt
-	    sudo grep "xpack.encryptedSavedObjects.encryptionKey:" encrypt.txt | sudo tee -a /etc/kibana/kibana.yml
-	    sudo grep "xpack.reporting.encryptionKey:" encrypt.txt | sudo tee -a /etc/kibana/kibana.yml
-	    sudo grep "xpack.security.encryptionKey:" encrypt.txt | sudo tee -a /etc/kibana/kibana.yml
-	    sudo echo "xpack.integration_assistant.enabled: false" | sudo tee -a /etc/kibana/kibana.yml
-	    sudo echo "server.host: $(hostname -I | awk '{print $1}')" | sudo tee -a /etc/kibana/kibana.yml
+	    	sudo grep "xpack.encryptedSavedObjects.encryptionKey:" encrypt.txt | sudo tee -a /etc/kibana/kibana.yml
+	    	sudo grep "xpack.reporting.encryptionKey:" encrypt.txt | sudo tee -a /etc/kibana/kibana.yml
+	    	sudo grep "xpack.security.encryptionKey:" encrypt.txt | sudo tee -a /etc/kibana/kibana.yml
+	    	sudo echo "xpack.integration_assistant.enabled: false" | sudo tee -a /etc/kibana/kibana.yml
+	    	sudo echo "server.host: $(hostname -I | awk '{print $1}')" | sudo tee -a /etc/kibana/kibana.yml
             sudo systemctl daemon-reload
             sudo systemctl enable kibana.service
             sudo systemctl start kibana.service
+			sudo systemctl enable logstash
+   			sudo systemctl start logstash
             rm encrypt.txt
             echo "Kibana berhasil diinstal."
             echo "Kibana dapat diakses melalui http://$(hostname -I | awk '{print $1}'):5601"
@@ -96,17 +98,17 @@ while true; do
         4)  
             echo "Silahkan Masukkan Token Kibana ini Pada Web: "
             echo ""
-	    sudo /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana 
-	    echo ""
-	    echo "======================================"
-	    echo ""
-	    sleep 2
-	    echo "Silahkan Masukkan Kode Verifikasi Kibana ini Pada Web: "
-	    echo ""
-	    sudo /usr/share/kibana/bin/kibana-verification-code
-	    echo ""
-	    sleep 1
-	    read -p "Tekan Enter untuk kembali ke menu."
+		    sudo /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana 
+		    echo ""
+		    echo "======================================"
+		    echo ""
+		    sleep 2
+		    echo "Silahkan Masukkan Kode Verifikasi Kibana ini Pada Web: "
+		    echo ""
+		    sudo /usr/share/kibana/bin/kibana-verification-code
+		    echo ""
+		    sleep 1
+		    read -p "Tekan Enter untuk kembali ke menu."
             ;;
         5)
             echo "Reset password Elasticsearch..."
@@ -131,30 +133,30 @@ while true; do
                 --fleet-server-es-ca-trusted-fingerprint=$CA_CERTIFICATE \
                 --fleet-server-port=8220 -f
             echo "Fleet Server berhasil diinstal!"
-	    sleep 1
-	    read -p "Tekan Enter untuk kembali ke menu."
+	    	sleep 1
+	    	read -p "Tekan Enter untuk kembali ke menu."
             ;;
         7)
             echo "Menginstal Jira..."
             curl -L -O https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-core-10.3.5-x64.bin
-	    sudo chmod 750 atlassian-jira-core-10.3.5-x64.bin
+	    	sudo chmod 750 atlassian-jira-core-10.3.5-x64.bin
      	    sudo ./atlassian-jira-core-10.3.5-x64.bin
-	    sleep 1
+	    	sleep 1
             echo "Jira telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}')"
             sleep 1
-	    read -p "Tekan Enter untuk kembali ke menu."
+	    	read -p "Tekan Enter untuk kembali ke menu."
             ;;
-	8)
- 	    echo "Konfigurasi Database untuk Jira..."
-     	    read -p "Masukkan nama user Database Jira: " PG_USER
-	    read -p "Masukkan password untuk user $PG_USER: " PG_PASSWORD
-	    read -p "Masukkan nama database yang akan dibuat: " PG_DB
-	    sleep 1
-	    # Membuat user dan database di PostgreSQL
-	    sudo -u postgres psql -c "CREATE USER $PG_USER WITH PASSWORD '$PG_PASSWORD';"
-	    sudo -u postgres psql -c "CREATE DATABASE $PG_DB;"
-	    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $PG_DB TO $PG_USER;"
-	    echo "User $PG_USER dan database $PG_DB telah berhasil dibuat."
+		8)
+	 	    echo "Konfigurasi Database untuk Jira..."
+	     	read -p "Masukkan nama user Database Jira: " PG_USER
+		    read -p "Masukkan password untuk user $PG_USER: " PG_PASSWORD
+		    read -p "Masukkan nama database yang akan dibuat: " PG_DB
+		    sleep 1
+		    # Membuat user dan database di PostgreSQL
+		    sudo -u postgres psql -c "CREATE USER $PG_USER WITH PASSWORD '$PG_PASSWORD';"
+		    sudo -u postgres psql -c "CREATE DATABASE $PG_DB;"
+		    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $PG_DB TO $PG_USER;"
+		    echo "User $PG_USER dan database $PG_DB telah berhasil dibuat."
      	    sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
 	    ;;
@@ -180,7 +182,7 @@ while true; do
             sleep 1
             echo "Fleet Server selesai Restart!"
             sleep 1
-	    read -p "Tekan Enter untuk kembali ke menu."
+	    	read -p "Tekan Enter untuk kembali ke menu."
             ;;
         0)
             echo "Keluar dari menu. Sampai jumpa!"
