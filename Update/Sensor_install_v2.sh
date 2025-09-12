@@ -79,7 +79,7 @@ while true; do
             echo "Daftar container aktif:"
             docker ps --format "table {{.Names}}\t{{.ID}}\t{{.Status}}"
             echo
-            read -p "Masukkan nama atau ID container Elastic Agent untuk di-restart: " container_name
+            read -p "Masukkan nama atau ID docker container untuk di-restart: " container_name
             if [ -z "$container_name" ]; then
                 echo "Nama atau ID container tidak boleh kosong!"
             else
