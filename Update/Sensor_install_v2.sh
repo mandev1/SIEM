@@ -32,10 +32,11 @@ while true; do
     echo "================================================"
     echo "1. Update & Upgrade Sistem"
     echo "2. Instalasi Elastic Agent via Docker"
-    echo "3. Restart Elastic Agent"
-    echo "4. Restart Semua Elastic Agent"
-    echo "5. Instalasi n8n"
-    echo "6. Restart n8n"
+    echo "3. Restart Spesifik Docker Container"
+    echo "4. Restart Semua Docker Container"
+    echo "5. Instalasi N8N"
+	echo "6. Instalasi WAHA"
+ 	echo "7. Instalasi Grafana"
     echo "0. Keluar"
     echo "================================================"
     read -p "Pilih opsi [0-6]: " opsi
@@ -95,7 +96,7 @@ while true; do
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
         4)
-            # Restart semua Elastic Agent
+            # Restart semua container
             if [ -z "$(docker ps -q)" ]; then
                 echo "Tidak ada container yang sedang berjalan untuk di-restart."
             else
@@ -117,11 +118,24 @@ while true; do
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
         6)
-            # Restart n8n
-            echo "Restart n8n..."
-            docker restart n8n 
+            # Instalasi waha
+            echo "Registrasi akun WAHA..."
+			read -p "Masukkan Username WAHA: " USERNAME
+            read -p "Masukkan Password WAHA: " PASSWORD
+            read -p "Masukkan IP Host Elasticsearch (contoh xx.xx.xx.xx): " IP_ADDRESS
+			echo "Menginstal waha..."
+			docker run -d -e WHATSAPP_SWAGGER_USERNAME=$USERNAME -e WHATSAPP_SWAGGER_PASSWORD=$PASSWORD -e WAHA_DASHBOARD_USERNAME=$USERNAME -e WAHA_DASHBOARD_PASSWORD=$PASSWORD --restart=always  -p 3001:3000 --name waha devlikeapro/waha
             sleep 1
-            echo "n8n telah berhasil Restart! Akses di http://$(hostname -I | awk '{print $1}'):5678/"
+            echo "n8n telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}'):5678/"
+            sleep 1
+            read -p "Tekan Enter untuk kembali ke menu."
+            ;;
+        7)
+            # Instalasi grafana
+            echo "Menginstal Grafana..."
+			docker run -d --restart=always --name grafana -p 3000:3000 --name grafana grafana/grafana
+            sleep 1
+            echo "grafana telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}'):3000/"
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
