@@ -122,11 +122,10 @@ while true; do
             echo "Registrasi akun WAHA..."
 			read -p "Masukkan Username WAHA: " USERNAME
             read -p "Masukkan Password WAHA: " PASSWORD
-            read -p "Masukkan IP Host Elasticsearch (contoh xx.xx.xx.xx): " IP_ADDRESS
 			echo "Menginstal waha..."
 			docker run -d -e WHATSAPP_SWAGGER_USERNAME=$USERNAME -e WHATSAPP_SWAGGER_PASSWORD=$PASSWORD -e WAHA_DASHBOARD_USERNAME=$USERNAME -e WAHA_DASHBOARD_PASSWORD=$PASSWORD --restart=always  -p 3001:3000 --name waha devlikeapro/waha
             sleep 1
-            echo "n8n telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}'):5678/"
+            echo "n8n telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}'):3001/"
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
