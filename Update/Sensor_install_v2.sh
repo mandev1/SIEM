@@ -109,14 +109,75 @@ while true; do
             ;;
         5)
             # Instalasi n8n
-            echo "Menginstal n8n..."
-			docker volume create n8n_data
-            docker run -d --restart=always --name n8n -p 5678:5678 -e N8N_SECURE_COOKIE=false -v n8n_data:/home/node/ n8nio/n8n
-            sleep 1
-            echo "n8n telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}'):5678/"
-            sleep 1
-            read -p "Tekan Enter untuk kembali ke menu."
-            ;;
+			echo "Menginstal n8n..."
+			
+			# Generate encryption key
+			KEY=$(openssl rand -hex 32)
+			
+			# Persiapan direktori data
+			mkdir -p /root/n8n_data
+			chmod 777 /root/n8n_data
+			sleep 1
+			
+			# Jalankan Redis untuk n8n
+			docker run -d \
+			  --name redis-n8n \
+			  --restart always \
+			  redis:7
+			
+			sleep 1
+			
+			# Jalankan container utama n8n
+			docker run -d \
+			  --name n8n-main \
+			  --restart always \
+			  -p 5678:5678 \
+			  -v /root/n8n_data:/home/node/.n8n \
+			  -e N8N_ENCRYPTION_KEY="$KEY" \
+			  -e EXECUTIONS_MODE=queue \
+			  -e QUEUE_BULL_REDIS_HOST=redis-n8n \
+			  -e QUEUE_BULL_REDIS_PORT=6379 \
+			  -e WEBHOOK_URL="http://$(hostname -I | awk '{print $1}'):5678" \
+			  -e N8N_SECURE_COOKIE=false \
+			  -e N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true \
+			  --link redis-n8n \
+			  n8nio/n8n
+			
+			sleep 1
+			
+			# Input jumlah worker
+			read -p "Jumlah n8n Worker (disesuaikan dengan workflow yang disiapkan): " WORKER
+			
+			# Validasi input
+			if ! [[ "$WORKER" =~ ^[0-9]+$ ]] || [ "$WORKER" -le 0 ]; then
+			  echo "Input tidak valid. Harus angka > 0." >&2
+			  exit 1
+			fi
+			
+			# Jalankan worker sesuai jumlah input
+			echo "Membuat $WORKER worker..."
+			for ((i=1; i<=WORKER; i++)); do
+			  docker run -d \
+			    --name n8n-worker-$i \
+			    --restart always \
+			    -v /root/n8n_data:/home/node/.n8n \
+			    -e N8N_ENCRYPTION_KEY="$KEY" \
+			    -e EXECUTIONS_MODE=queue \
+			    -e EXECUTIONS_CONCURRENCY=5 \
+			    -e QUEUE_BULL_REDIS_HOST=redis-n8n \
+			    -e QUEUE_BULL_REDIS_PORT=6379 \
+			    -e N8N_SECURE_COOKIE=false \
+			    --link redis-n8n \
+			    n8nio/n8n worker
+			done
+			
+			# Selesai
+			echo
+			echo "✅ n8n telah berhasil diinstal!"
+			echo "Akses di: http://$(hostname -I | awk '{print $1}'):5678/"
+			sleep 1
+			read -p "Tekan Enter untuk kembali ke menu."
+			;;
         6)
             # Instalasi waha
             echo "Registrasi akun WAHA..."
