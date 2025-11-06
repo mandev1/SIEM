@@ -35,8 +35,9 @@ while true; do
     echo "3. Restart Spesifik Docker Container"
     echo "4. Restart Semua Docker Container"
     echo "5. Instalasi N8N"
-	echo "6. Instalasi WAHA"
- 	echo "7. Instalasi Grafana"
+	echo "6. Instalasi N8N Worker"
+	echo "7. Instalasi WAHA"
+ 	echo "8. Instalasi Grafana"
     echo "0. Keluar"
     echo "================================================"
     read -p "Pilih opsi [0-6]: " opsi
@@ -172,13 +173,50 @@ while true; do
 			done
 			
 			# Selesai
-			echo
 			echo "✅ n8n telah berhasil diinstal!"
 			echo "Akses di: http://$(hostname -I | awk '{print $1}'):5678/"
+			echo "Selanjutnya melakukan instalasi worker pada menu 6"
 			sleep 1
 			read -p "Tekan Enter untuk kembali ke menu."
 			;;
-        6)
+		 6)
+            # Instalasi n8n worker
+			echo "Menginstal n8n worker..."
+			# Input jumlah worker
+			read -p "Jumlah n8n Worker (disesuaikan dengan workflow yang disiapkan): " WORKER
+			
+			# Validasi input
+			if ! [[ "$WORKER" =~ ^[0-9]+$ ]] || [ "$WORKER" -le 0 ]; then
+			  echo "Input tidak valid. Harus angka > 0." >&2
+			  exit 1
+			fi
+			
+			# Jalankan worker sesuai jumlah input
+			echo "Membuat $WORKER worker..."
+			for ((i=1; i<=WORKER; i++)); do
+			  docker run -d \
+			    --name n8n-worker-$i \
+			    --restart always \
+			    -v /root/n8n_data:/home/node/.n8n \
+			    -e N8N_ENCRYPTION_KEY="$KEY" \
+			    -e EXECUTIONS_MODE=queue \
+			    -e EXECUTIONS_CONCURRENCY=5 \
+			    -e QUEUE_BULL_REDIS_HOST=redis-n8n \
+			    -e QUEUE_BULL_REDIS_PORT=6379 \
+			    -e N8N_SECURE_COOKIE=false \
+			    --link redis-n8n \
+			    n8nio/n8n worker
+
+				sleep 1
+				echo "✅ n8n worker $Worker telah berhasil diinstal!"
+			done
+			
+			# Selesai
+
+			sleep 1
+			read -p "Tekan Enter untuk kembali ke menu."
+			;;	
+        7)
             # Instalasi waha
             echo "Registrasi akun WAHA..."
 			read -p "Masukkan Username WAHA: " USERNAME
@@ -186,11 +224,11 @@ while true; do
 			echo "Menginstal waha..."
 			docker run -d -e WHATSAPP_SWAGGER_USERNAME=$USERNAME -e WHATSAPP_SWAGGER_PASSWORD=$PASSWORD -e WAHA_DASHBOARD_USERNAME=$USERNAME -e WAHA_DASHBOARD_PASSWORD=$PASSWORD --restart=always  -p 3001:3000 --name waha devlikeapro/waha
             sleep 1
-            echo "n8n telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}'):3001/"
+            echo "WAHA telah berhasil diinstal! Akses di http://$(hostname -I | awk '{print $1}'):3001/"
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
             ;;
-        7)
+        8)
             # Instalasi grafana
             echo "Menginstal Grafana..."
 			docker run -d --restart=always --name grafana -p 3000:3000 --name grafana grafana/grafana
