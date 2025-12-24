@@ -119,14 +119,14 @@ while true; do
         6)
             # Instalasi Fleet Server
             echo "Download Installer Fleet Server..."
-            curl -L -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.17.3-linux-x86_64.tar.gz
-            tar xzvf elastic-agent-8.17.3-linux-x86_64.tar.gz
+            curl -L -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.19.2-linux-x86_64.tar.gz
+            tar xzvf elastic-agent-8.19.2-linux-x86_64.tar.gz
             read -p "Masukkan Fleet Server Service Token: " SERVICE_TOKEN
             sleep 1
             read -p "Masukkan Fleet Server CA Certificate: " CA_CERTIFICATE
             sleep 1
             echo "Menginstal Fleet Server..."
-            sudo elastic-agent-8.17.3-linux-x86_64/elastic-agent install \
+            sudo elastic-agent-8.19.2-linux-x86_64/elastic-agent install \
                 --fleet-server-es="https://$(hostname -I | awk '{print $1}'):9200" \
                 --fleet-server-service-token=$SERVICE_TOKEN \
                 --fleet-server-policy=fleet-server-policy \
