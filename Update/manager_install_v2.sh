@@ -47,10 +47,10 @@ while true; do
         1)
             echo "Melakukan update & upgrade sistem..."
             sudo apt update && sudo apt upgrade -y
-            sudo apt install apt-transport-https curl gnupg postgresql postgresql-contrib -y
+            sudo apt install apt-transport-https curl gnupg -y
             sudo wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
-            sudo echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
-            sudo apt update
+            sudo echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/9.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-9.x.list
+			sudo apt update
             echo "Update & upgrade selesai."
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
@@ -119,14 +119,14 @@ while true; do
         6)
             # Instalasi Fleet Server
             echo "Download Installer Fleet Server..."
-            curl -L -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.19.2-linux-x86_64.tar.gz
-            tar xzvf elastic-agent-8.19.2-linux-x86_64.tar.gz
+            curl -L -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-9.2.3-linux-x86_64.tar.gz
+            tar xzvf elastic-agent-9.2.3-linux-x86_64.tar.gz
             read -p "Masukkan Fleet Server Service Token: " SERVICE_TOKEN
             sleep 1
             read -p "Masukkan Fleet Server CA Certificate: " CA_CERTIFICATE
             sleep 1
             echo "Menginstal Fleet Server..."
-            sudo elastic-agent-8.19.2-linux-x86_64/elastic-agent install \
+            sudo elastic-agent-9.2.3-linux-x86_64/elastic-agent install \
                 --fleet-server-es="https://$(hostname -I | awk '{print $1}'):9200" \
                 --fleet-server-service-token=$SERVICE_TOKEN \
                 --fleet-server-policy=fleet-server-policy \
@@ -138,6 +138,7 @@ while true; do
             ;;
         7)
             echo "Menginstal Jira..."
+			apt install postresql postgresql-contrib
             curl -L -O https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-core-10.3.5-x64.bin
 	    	sudo chmod 750 atlassian-jira-core-10.3.5-x64.bin
      	    sudo ./atlassian-jira-core-10.3.5-x64.bin
