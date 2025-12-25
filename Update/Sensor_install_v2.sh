@@ -40,7 +40,7 @@ while true; do
  	echo "8. Instalasi Grafana"
     echo "0. Keluar"
     echo "================================================"
-    read -p "Pilih opsi [0-6]: " opsi
+    read -p "Pilih opsi [0-8]: " opsi
 
     case $opsi in
         1)
