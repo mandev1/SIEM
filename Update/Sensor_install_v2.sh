@@ -60,17 +60,13 @@ while true; do
             # Instalasi Elastic Agent
             echo "Menginstal Elastic Agent..."
             read -p "Masukkan Fleet Enrollment Token: " ENROLLMENT_TOKEN
-            echo "Install Elastic Agent Pada Server ini (via Docker)..."
+            echo "Install Elastic Agent Pada Server ini ..."
             read -p "Masukkan Nama Agent: " AGENT
             read -p "Masukkan IP Host Elasticsearch (contoh xx.xx.xx.xx): " IP_ADDRESS
-            sudo docker run -d --restart=always --name $AGENT \
-                --env FLEET_ENROLL=1 \
-                --env FLEET_URL=https://$IP_ADDRESS:8220 \
-                --env FLEET_ENROLLMENT_TOKEN=$ENROLLMENT_TOKEN \
-                --env FLEET_INSECURE=true \
-                --cap-add=NET_RAW \
-                --cap-add=SETUID \
-                docker.elastic.co/elastic-agent/elastic-agent-complete:8.17.0
+			curl -L -O https://artifacts.elastic.co/downloads/beats/elastic-agent/elastic-agent-8.19.9-linux-x86_64.tar.gz 
+			tar xzvf elastic-agent-8.19.9-linux-x86_64.tar.gz
+			cd elastic-agent-8.19.9-linux-x86_64
+			sudo ./elastic-agent install --url=https://$IP_ADDRESS:8220 --enrollment-token=$ENROLLMENT_TOKEN
             echo "Elastic Agent berhasil diinstal dengan Docker!"
             sleep 1
             read -p "Tekan Enter untuk kembali ke menu."
